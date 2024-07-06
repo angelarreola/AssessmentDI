@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+:root {
+  background: #191729;
+}
+
+.customPolygon{
+  clip-path: polygon(31% 0, 100% 0, 100% 100%, 0% 100%);
+}
