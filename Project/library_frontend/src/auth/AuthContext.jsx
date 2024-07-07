@@ -8,19 +8,18 @@ export const AuthProvider = ({ children }) => {
   });
 
   const [user, setUser] = useState(() => {
-    return localStorage.getItem('user')
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null; // Parsear JSON string
   });
 
   useEffect(() => {
-    if (authToken && user) {
+    if (authToken) {
       localStorage.setItem('authToken', authToken);
-      localStorage.setItem('user', user);
     } 
-    // else {
-    //   localStorage.removeItem('authToken');
-    //   localStorage.removeItem('currentUserRole');
-    // }
-  }, [authToken]);
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  }, [authToken, user]);
 
   return (
     <AuthContext.Provider value={{ user, authToken, setAuthToken, setUser }}>

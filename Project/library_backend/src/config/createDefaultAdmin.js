@@ -23,6 +23,12 @@ async function createDefaultAdmin() {
         status: 'inactive'
       });
 
+      await User.create({
+        name: 'Ángel Arreola',
+        email: "angelarreolagg@gmail.com",
+        password: await bcrypt.hash("12345", 10),
+      });
+
       console.log('Usuarios administradores creados con éxito.');
     } else {
       console.log('Ya existe un usuario administrador en la base de datos.');

@@ -6,6 +6,10 @@ import RootLayout from './routes/RootLayout';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import { AuthProvider } from './auth/AuthContext';
+import ProtectedRoute from './auth/ProtectedRoute';
+import withAuthLoader from './auth/withAuthLoader';
+
+import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 
 import Home from './routes/Home';
 import Users, {loader as usersLoader} from './routes/Users';
@@ -15,8 +19,6 @@ import LogInModal from './components/LogInModal';
 import UserModal from './components/UserModal';
 import UserEditModal,{ loader as userLoader} from './components/UserEditModal';
 import BookModal, {loader as bookLoader} from './components/BookModal';
-
-
 
 const router = createBrowserRouter([
   {
@@ -35,8 +37,12 @@ const router = createBrowserRouter([
       },
       {
         path: 'users',
-        element: <Users />,
-        loader: usersLoader,
+        element: (
+          <ProtectedRoute>
+            <Users />
+          </ProtectedRoute>
+        ),
+        loader: withAuthLoader(usersLoader),
         children: [
           {
             path: "newUser",
@@ -45,14 +51,18 @@ const router = createBrowserRouter([
           {
             path: "editUser/:id",
             element: <UserEditModal />,
-            loader: userLoader,
+            loader: withAuthLoader(userLoader),
           }
         ]
       },
       {
         path: 'books',
-        element: <Books />,
-        loader: booksLoader,
+        element: (
+          <ProtectedRoute>
+            <Books />,
+          </ProtectedRoute>
+        ),
+        loader: withAuthLoader(booksLoader),
         children: [
           {
             path: 'newBook',
@@ -61,7 +71,7 @@ const router = createBrowserRouter([
           {
             path: 'editBook/:id',
             element: <BookModal isEditing={true}/>,
-            loader: bookLoader
+            loader: withAuthLoader(bookLoader)
           }
         ]
       }

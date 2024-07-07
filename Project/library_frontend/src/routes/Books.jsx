@@ -1,15 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Outlet, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosConfig";
+import { AuthContext } from "../auth/AuthContext";
 
 function Books() {
+  const { user } = useContext(AuthContext);
   const books = useLoaderData();
   const [booksList, setBooksList] = useState(books);
 
   const onSubmitDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de querer borrar este libro?")) {
+    if (
+      window.confirm("¿Estás seguro de querer borrar este libro?") &&
+      user.role == "admin"
+    ) {
       try {
         const response = await axiosInstance.delete(`/books/delete/${id}`);
         console.log(response.data);
@@ -53,7 +58,9 @@ function Books() {
                 <th className="text-left py-2 px-4">Autor</th>
                 <th className="text-left py-2 px-4">Fecha de Publicación</th>
                 <th className="text-left py-2 px-4">Agregado por</th>
-                <th className="text-left py-2 px-4">Opciones</th>
+                {user.role == "admin" && (
+                  <th className="text-left py-2 px-4">Opciones</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -67,30 +74,35 @@ function Books() {
                       <td className="text-left py-2 px-4">{book.isbn}</td>
                       <td className="text-left py-2 px-4">{book.title}</td>
                       <td className="text-left py-2 px-4">{book.author}</td>
-                      <td className="text-left py-2 px-4">{book.publicationDate}</td>
-                      <td className="text-left py-2 px-4">{book.userName}</td>
-                      <td className="py-2 px-4 flex gap-2">
-                        <Link
-                          to={`editBook/${book.id}`}
-                          className="w-8 h-8 rounded-lg bg-[#05045E] grid place-items-center"
-                        >
-                          <img
-                            className="w-5 h-5"
-                            src="../edit.svg"
-                            alt="editIcon"
-                          />
-                        </Link>
-                        <button
-                          onClick={() => onSubmitDelete(book.id)}
-                          className="w-8 h-8 rounded-lg bg-[#870000] grid place-items-center"
-                        >
-                          <img
-                            className="w-5 h-5"
-                            src="../delete.svg"
-                            alt="deleteIcon"
-                          />
-                        </button>
+                      <td className="text-left py-2 px-4">
+                        {book.publicationDate}
                       </td>
+                      <td className="text-left py-2 px-4">{book.userName}</td>
+
+                      {user.role == "admin" && (
+                        <td className="py-2 px-4 flex gap-2">
+                          <Link
+                            to={`editBook/${book.id}`}
+                            className="w-8 h-8 rounded-lg bg-[#05045E] grid place-items-center"
+                          >
+                            <img
+                              className="w-5 h-5"
+                              src="../edit.svg"
+                              alt="editIcon"
+                            />
+                          </Link>
+                          <button
+                            onClick={() => onSubmitDelete(book.id)}
+                            className="w-8 h-8 rounded-lg bg-[#870000] grid place-items-center"
+                          >
+                            <img
+                              className="w-5 h-5"
+                              src="../delete.svg"
+                              alt="deleteIcon"
+                            />
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   );
                 })
@@ -105,7 +117,7 @@ function Books() {
       </motion.div>
       <Outlet />
     </>
-  )
+  );
 }
 
 export default Books;

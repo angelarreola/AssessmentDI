@@ -2,11 +2,22 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 exports.register = async (req, res) => {
-    console.log(req.body);
     const { name, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
+    // const authorization = req.get('authorization');
+
+    // let token = null;
+    // if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+    //   token = authorization.substring(7);
+    // }
+
+    // const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
+    // console.log(decodedToken);
+    // if (!token || !decodedToken.id) {
+    //   return res.status(401).json({ message: 'Token missing or invalid' });
+    // }
     try {
-      const user = await User.create({ name, email, password: hashedPassword, role: "user" });
+      const user =  await User.create({ name, email, password: hashedPassword, role: "user" });
       res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
       res.status(500).json({ message: 'Error creating user' });

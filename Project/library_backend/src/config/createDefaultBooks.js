@@ -39,7 +39,7 @@ async function createDefaultAdmin() {
       });
       console.log('Libros default creados con éxito.');
   } catch (error) {
-    console.error('Error al crear usuario administrador:', error);
+    console.error('Error al libros default:', error);
   }
 }
 
