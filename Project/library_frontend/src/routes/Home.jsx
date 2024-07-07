@@ -15,9 +15,9 @@ function Home(props) {
           damping: 15,
           duration: 2,
         }}
-        className="mt-24 grid place-items-center gap-10 font-montserrat text-white"
+        className="mt-0 sm:mt-24 grid place-items-center gap-10 font-montserrat text-white"
       >
-        <div className="flex justify-center items-center w-1/2 gap-10 text-center">
+        <div className="flex flex-col sm:flex-row justify-center items-center w-1/2 gap-2 sm:gap-10 text-center">
           <img
             src="./amicoIlustration.svg"
             alt="HouseLetters_Ilustration"

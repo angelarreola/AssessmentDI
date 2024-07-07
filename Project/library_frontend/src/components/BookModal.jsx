@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axiosInstance from "../utils/axiosConfig";
@@ -21,16 +21,6 @@ function BookModal({ isEditing }) {
     reset,
     formState: { errors },
   } = useForm({ defaultValues: book });
-
-  //   useEffect(() => {
-  //     if (book) {
-  //       // Asegúrate de que la fecha esté en el formato YYYY-MM-DD
-  //       if (book.publicationDate) {
-  //         book.publicationDate = new Date(book.publicationDate).toISOString().split('T')[0];
-  //       }
-  //       reset(book);
-  //     }
-  //   }, [book, reset]);
 
   const onSubmitRegister = async (data) => {
     const dataForm = {...data, userId: user.id, userName: user.name}
