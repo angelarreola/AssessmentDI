@@ -23,16 +23,32 @@ module.exports.getUsers = async (req, res) => {
     }
 }
 
+module.exports.getUser = async (req, res) => {
+  const { id } = req.params;
+  console.log('id:', id);
+
+  try {
+      const user = await User.findByPk(id);
+      res.status(200).json(user);
+      console.log(user);
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching users' });
+  }
+}
+
 exports.updateUser = async (req, res) => {
     const { id } = req.params;
-    const { username, role } = req.body;
+    const { name, email, password, status } = req.body;
     try {
       const user = await User.findByPk(id);
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
-      user.username = username;
-      user.role = role;
+      user.name = name;
+      user.email = email;
+      user.password = password;
+      user.status = status;
+
       await user.save();
       res.status(200).json(user);
     } catch (error) {
@@ -42,6 +58,7 @@ exports.updateUser = async (req, res) => {
   
   exports.deleteUser = async (req, res) => {
     const { id } = req.params;
+    console.log(id);
     try {
       const user = await User.findByPk(id);
       if (!user) {

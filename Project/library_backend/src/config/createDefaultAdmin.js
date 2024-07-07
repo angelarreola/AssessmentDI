@@ -15,7 +15,15 @@ async function createDefaultAdmin() {
         role: 'admin'
       });
 
-      console.log('Usuario administrador creado con éxito.');
+      await User.create({
+        name: 'admin2',
+        email: "admin2@admin2.com",
+        password: await bcrypt.hash("password", 10),
+        role: 'admin',
+        status: 'inactive'
+      });
+
+      console.log('Usuarios administradores creados con éxito.');
     } else {
       console.log('Ya existe un usuario administrador en la base de datos.');
     }

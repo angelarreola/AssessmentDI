@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm} from 'react-hook-form';
 import { AuthContext } from '../auth/AuthContext'
+import axiosInstance from "../utils/axiosConfig";
 
 // function parseJwt (token) {
 //   var base64Url = token.split('.')[1];
@@ -15,7 +16,7 @@ import { AuthContext } from '../auth/AuthContext'
 
 function LogInModal() {
   const navigate = useNavigate();
-  const { setAuthToken } = useContext(AuthContext);
+  const { setAuthToken, setUser } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -23,27 +24,20 @@ function LogInModal() {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = (data) => {
-    fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-      setAuthToken(result.token); // Almacena el token en el contexto
+  const onSubmit = async (data) => {
+    try {
+      const response = await axiosInstance.post('/login', data);
+      setAuthToken(response.data.token);
+      setUser(response.data.user);
       navigate('/');
-    })
-    .catch(error => {
+    } catch (error) {
       console.log(error);
-    })
+    }
   };
 
   return (
     <div className=" absolute inset-0 z-10 bg-black/50 grid place-items-center">
-      <div className="relative bg-white w-1/3 px-8 py-5 rounded-lg font-inter">
+      <div className="relative bg-white w-10/12 lg:w-1/3 px-8 py-5 rounded-lg font-inter">
         <Link to={"/"}>
           <img
             src="./remove.svg"

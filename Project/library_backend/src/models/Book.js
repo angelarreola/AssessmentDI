@@ -1,5 +1,6 @@
-const { DataTypes, UniqueConstraintError } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+
 
 const Book = sequelize.define('Book', {
   isbn: {
@@ -18,6 +19,14 @@ const Book = sequelize.define('Book', {
   publicationDate: {
     type: DataTypes.DATEONLY,
     allowNull: false
+  },
+  userId: {
+    type: DataTypes.INTEGER, // Tipo de dato de la clave externa (id de User)
+    allowNull: false,
+  },
+  userName: {
+    type: DataTypes.STRING,
+    allowNull: false,
   }
 });
 

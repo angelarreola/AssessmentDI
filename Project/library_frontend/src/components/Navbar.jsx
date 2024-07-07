@@ -4,12 +4,12 @@ import { AuthContext } from "../auth/AuthContext";
 
 function Navbar() {
   const { authToken } = useContext(AuthContext);
-  console.log(authToken);
+  const { user } = useContext(AuthContext);
 
   return (
     <nav className="flex justify-between items-center bg-white h-16 font-montserrat">
       <Link to={"/"} className="flex justify-center items-center gap-2 px-5">
-        <img src="./HouseLettersLogo.svg" alt="Logo_HouseOfLetters" />
+        <img src="../HouseLettersLogo.svg" alt="Logo_HouseOfLetters" />
         <p className="font-black text-black-custom text-2xl">
           House Of Letters
         </p>
@@ -18,7 +18,7 @@ function Navbar() {
         <div className="flex justify-center gap-8 px-10 text-gray-custom font-black">
           {authToken ? (
             <>
-              <Link to={"users"}>Usuarios</Link>
+              {user.role == 'admin' && <Link to={"users"}>Usuarios</Link>}
               <Link to={"books"}>Libros</Link>
             </>
           ) : (

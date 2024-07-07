@@ -1,21 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm} from 'react-hook-form';
-import { AuthContext } from '../auth/AuthContext'
+import axiosInstance from "../utils/axiosConfig";
 
-// function parseJwt (token) {
-//   var base64Url = token.split('.')[1];
-//   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-//   var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-//       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-//   }).join(''));
-
-//   return JSON.parse(jsonPayload);
-// }
-
-function LogInModal() {
+function UserModal() {
   const navigate = useNavigate();
-  const { setAuthToken } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -23,27 +12,23 @@ function LogInModal() {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = (data) => {
-    fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-      setAuthToken(result.token); // Almacena el token en el contexto
-      navigate('/');
-    })
-    .catch(error => {
-      console.log(error);
-    })
+  const onSubmitRegister = async (data) => {
+    if (data.password === data.repeatPassword) {
+      try {
+        const response = await axiosInstance.post('/users/register', data);
+        console.log(response);
+        navigate('/users');
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      console.log('Contraseñas no coinciden');
+    }
   };
 
   return (
-    <div className=" absolute inset-0 z-10 bg-black/50 grid place-items-center">
-      <div className="relative bg-white w-1/3 px-8 py-5 rounded-lg font-inter">
+    <div className="absolute inset-0 z-10 bg-black/50 grid place-items-center">
+      <div className="relative bg-white w-10/12 lg:w-1/3 px-8 py-5 rounded-lg font-inter">    
         <Link to={"/users"}>
           <img
             src="../remove.svg"
@@ -53,10 +38,24 @@ function LogInModal() {
         </Link>
 
         <h3 className="text-[28px] font-black">Registar Usuario</h3>
-        <form action="POST" className="flex flex-col gap-6 mt-16" onSubmit={handleSubmit(onSubmit)}>
+        <form action="POST" className="flex flex-col gap-6 mt-16" onSubmit={handleSubmit(onSubmitRegister)}>
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-secondary font-bold" htmlFor="name">
+              Nombre
+            </label>
+            <input
+              {...register("name", { required: true })}
+              name="name"
+              className="placeholder:text-gray-custom font-semibold
+            border-none bg-light-gray-custom p-2 rounded-xl"
+              type="text"
+              placeholder="Ingresa tu nombre..."
+            />
+            {errors.name && <span className="font-semibold text-sm text-red-500">This field is required</span>}
+          </div>
           <div className="flex flex-col gap-2 w-full">
             <label className="text-secondary font-bold" htmlFor="email">
-              E-mail
+              Correo electrónico
             </label>
             <input
               {...register("email", { required: true })}
@@ -64,8 +63,9 @@ function LogInModal() {
               className="placeholder:text-gray-custom font-semibold
             border-none bg-light-gray-custom p-2 rounded-xl"
               type="email"
-              placeholder="ejemplo@ejemplo.com"
+              placeholder="ejemplo@houseletters.com"
             />
+            {errors.email && <span className="font-semibold text-sm text-red-500">This field is required</span>}
           </div>
           <div className="flex flex-col gap-2 w-full">
             <label className="text-secondary font-bold" htmlFor="password">
@@ -79,12 +79,27 @@ function LogInModal() {
               type="password"
               placeholder="Escribe tu contraseña..."
             />
+            {errors.password && <span className="font-semibold text-sm text-red-500">This field is required</span>}
+          </div>
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-secondary font-bold" htmlFor="repeatPassword">
+              Confirmar Contraseña
+            </label>
+            <input
+              {...register("repeatPassword", { required: true })}
+              name="repeatPassword"
+              className="placeholder:text-gray-custom font-semibold
+            border-none bg-light-gray-custom p-2 rounded-xl"
+              type="password"
+              placeholder="Escribe tu contraseña..."
+            />
+            {errors.repeatPassword && <span className="font-semibold text-sm text-red-500">This field is required</span>}
           </div>
           <button
             type="submit"
-            className="bg-primary rounded-lg text-white font-bold p-2 w-fit"
+            className="bg-[#5BC873] rounded-lg text-white font-bold py-2 px-4 w-fit mt-4"
           >
-            Iniciar Sesión
+            Agregar
           </button>
         </form>
       </div>
@@ -92,4 +107,4 @@ function LogInModal() {
   );
 }
 
-export default LogInModal;
+export default UserModal;

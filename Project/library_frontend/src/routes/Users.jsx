@@ -1,11 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Outlet, useLoaderData } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import axiosInstance from "../utils/axiosConfig";
 
 function Users() {
   const users = useLoaderData();
   const [usersList, setUsersList] = useState(users);
+
+  const onSubmitDelete = async (id) => {
+    if (window.confirm("¿Estás seguro de querer borrar este usuario?")) {
+      try {
+        const response = await axiosInstance.delete(`/users/delete/${id}`);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      }
+    }
+  };
 
   return (
     <>
@@ -23,7 +35,7 @@ function Users() {
         <div className="flex items-center justify-between w-full">
           <div className="flex justify-center items-center gap-2">
             <h2 className="text-3xl font-bold">Usuarios</h2>
-            <img src="./users.svg" alt="usersLogo" />
+            <img src="../users.svg" alt="usersLogo" />
           </div>
           <Link
             className="bg-primary rounded-lg text-white font-bold p-2 w-fit"
@@ -55,22 +67,28 @@ function Users() {
                       <td className="text-left py-2 px-4">{user.id}</td>
                       <td className="text-left py-2 px-4">{user.name}</td>
                       <td className="text-left py-2 px-4">{user.email}</td>
-                      <td className="text-left py-2 px-4">Activo</td>
+                      <td className="text-left py-2 px-4">{user.status == 'active' ? "Activo" : "Inactivo"}</td>
                       <td className="py-2 px-4 flex gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-[#05045E] grid place-items-center">
+                        <Link
+                          to={`editUser/${user.id}`}
+                          className="w-8 h-8 rounded-lg bg-[#05045E] grid place-items-center"
+                        >
                           <img
                             className="w-5 h-5"
                             src="../edit.svg"
                             alt="editIcon"
                           />
-                        </div>
-                        <div className="w-8 h-8 rounded-lg bg-[#870000] grid place-items-center">
+                        </Link>
+                        <button
+                          onClick={() => onSubmitDelete(user.id)}
+                          className="w-8 h-8 rounded-lg bg-[#870000] grid place-items-center"
+                        >
                           <img
                             className="w-5 h-5"
                             src="../delete.svg"
                             alt="deleteIcon"
                           />
-                        </div>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -92,7 +110,11 @@ function Users() {
 export default Users;
 
 export async function loader() {
-  const response = await fetch("http://localhost:3000/api/users");
-  const resData = await response.json();
-  return resData;
+  try {
+    const response = await axiosInstance.get("/users");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
 }

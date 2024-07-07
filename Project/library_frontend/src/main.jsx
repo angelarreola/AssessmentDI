@@ -3,16 +3,19 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 
 import RootLayout from './routes/RootLayout';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+
+import { AuthProvider } from './auth/AuthContext';
 
 import Home from './routes/Home';
 import Users, {loader as usersLoader} from './routes/Users';
-import Books from './routes/Books';
+import Books, {loader as booksLoader} from './routes/Books';
 
 import LogInModal from './components/LogInModal';
 import UserModal from './components/UserModal';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import UserEditModal,{ loader as userLoader} from './components/UserEditModal';
+import BookModal, {loader as bookLoader} from './components/BookModal';
 
-import { AuthProvider } from './auth/AuthContext'
 
 
 const router = createBrowserRouter([
@@ -38,12 +41,29 @@ const router = createBrowserRouter([
           {
             path: "newUser",
             element: <UserModal />
+          },
+          {
+            path: "editUser/:id",
+            element: <UserEditModal />,
+            loader: userLoader,
           }
         ]
       },
       {
         path: 'books',
-        element: <Books />
+        element: <Books />,
+        loader: booksLoader,
+        children: [
+          {
+            path: 'newBook',
+            element: <BookModal isEditing={false}/>
+          },
+          {
+            path: 'editBook/:id',
+            element: <BookModal isEditing={true}/>,
+            loader: bookLoader
+          }
+        ]
       }
     ]
   },
