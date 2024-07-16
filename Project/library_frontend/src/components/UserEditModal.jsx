@@ -3,11 +3,15 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axiosInstance from "../utils/axiosConfig";
 import { useLoaderData } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { updateUserAPI } from '../store/users/users-actions';
 
 function UserEditModal() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate();
+
   const { request } = useParams();
   const user = useLoaderData(loader, request);
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -16,16 +20,8 @@ function UserEditModal() {
   } = useForm({ defaultValues: user });
 
   const onSubmit = async (data) => {
-    try {
-      const response = await axiosInstance.put(
-        `users/update/${data.id}`,
-        data
-      );
-      console.log(response);
-      navigate("/users");
-    } catch (error) {
-      console.log(error);
-    }
+    dispatch(updateUserAPI(data.id, data));
+    navigate("/users");
   };
 
   return (
@@ -140,7 +136,7 @@ export async function loader(request) {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching user:", error);
     throw error;
   }
 }

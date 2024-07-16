@@ -1,28 +1,25 @@
-import React, { useContext, useState } from "react";
-import { Outlet, useLoaderData } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import axiosInstance from "../utils/axiosConfig";
-import { AuthContext } from "../auth/AuthContext";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchBooksAPI, deleteBookAPI } from "../store/books/books-actions";
 
 function Books() {
-  const { user } = useContext(AuthContext);
-  const books = useLoaderData();
-  const [booksList, setBooksList] = useState(books);
+  const dispatch = useDispatch();
+  const { books, booksQuantity } = useSelector((state) => state.books);
+  const { user } = useSelector(state => state.auth) 
 
-  const onSubmitDelete = async (id) => {
-    if (
-      window.confirm("¿Estás seguro de querer borrar este libro?") &&
-      user.role == "admin"
-    ) {
-      try {
-        const response = await axiosInstance.delete(`/books/delete/${id}`);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error deleting book:", error);
-      }
+  useEffect(() => {
+    dispatch(fetchBooksAPI());
+  }, []);
+
+  const onSubmitDelete = (id) => {
+    if (window.confirm("¿Estás seguro de querer borrar este libro?") && user.role == "admin"){
+      dispatch(deleteBookAPI(id));
     }
   };
+
   return (
     <>
       <motion.div
@@ -64,8 +61,8 @@ function Books() {
               </tr>
             </thead>
             <tbody>
-              {booksList.length > 0 ? (
-                booksList.map((book, index) => {
+              {books.length > 0 ? (
+                books.map((book, index) => {
                   return (
                     <tr
                       key={index}
@@ -121,13 +118,3 @@ function Books() {
 }
 
 export default Books;
-
-export async function loader() {
-  try {
-    const response = await axiosInstance.get("/books");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching books:", error);
-    throw error;
-  }
-}

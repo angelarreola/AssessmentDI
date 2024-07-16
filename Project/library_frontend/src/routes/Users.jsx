@@ -1,21 +1,22 @@
-import React, { useState } from "react";
-import { Outlet, useLoaderData } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useEffect } from "react";
+import { Outlet } from "react-router-dom";
+import { motion, steps } from "framer-motion";
 import { Link } from "react-router-dom";
 import axiosInstance from "../utils/axiosConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsersAPI, updateUserAPI, deleteUserAPI } from '../store/users/users-actions';
 
 function Users() {
-  const users = useLoaderData();
-  const [usersList, setUsersList] = useState(users);
+  const dispatch = useDispatch();
+  const { users, usersQuantity } = useSelector(state => state.users);
+  
+  useEffect(() => {
+    dispatch(fetchUsersAPI());
+  }, []);
 
-  const onSubmitDelete = async (id) => {
+  const onSubmitDelete = (id) => {
     if (window.confirm("¿Estás seguro de querer borrar este usuario?")) {
-      try {
-        const response = await axiosInstance.delete(`/users/delete/${id}`);
-        console.log(response.data);
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      }
+      dispatch(deleteUserAPI(id));
     }
   };
 
@@ -57,8 +58,8 @@ function Users() {
               </tr>
             </thead>
             <tbody>
-              {usersList.length > 0 ? (
-                usersList.map((user, index) => {
+              {users.length > 0 ? (
+                users.map((user, index) => {
                   return (
                     <tr
                       key={index}
@@ -109,12 +110,12 @@ function Users() {
 
 export default Users;
 
-export async function loader() {
-  try {
-    const response = await axiosInstance.get("/users");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    throw error;
-  }
-}
+// export async function loader() {
+//   try {
+//     const response = await axiosInstance.get("/users");
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching users:", error);
+//     throw error;
+//   }
+// }

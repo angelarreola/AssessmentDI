@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 import { motion } from "framer-motion";
 
 function Home(props) {
-  console.log(props.auth);
   return (
     <>
       <motion.div

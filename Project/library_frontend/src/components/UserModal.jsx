@@ -1,9 +1,11 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm} from 'react-hook-form';
-import axiosInstance from "../utils/axiosConfig";
+import { useDispatch } from 'react-redux';
+import { registerUserAPI } from '../store/users/users-actions';
 
 function UserModal() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     register,
@@ -14,12 +16,11 @@ function UserModal() {
 
   const onSubmitRegister = async (data) => {
     if (data.password === data.repeatPassword) {
-      try {
-        const response = await axiosInstance.post('/users/register', data);
-        console.log(response);
+      const result = await dispatch(registerUserAPI(data));
+      if (result) {
         navigate('/users');
-      } catch (error) {
-        console.log(error);
+      } else {
+        alert('Error registrando al usuario.')
       }
     } else {
       console.log('Contraseñas no coinciden');

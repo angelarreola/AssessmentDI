@@ -7,12 +7,9 @@ const axiosInstance = axios.create({
   }
 });
 
-// Ejemplo de un interceptor de solicitudes
 axiosInstance.interceptors.request.use(
   config => {
-    // Puedes agregar lógica adicional antes de enviar la solicitud
-    // como agregar un token de autenticación
-    const token = localStorage.getItem('authToken'); // Obtener el token de autenticación desde el local storage
+    const token = localStorage.getItem('authToken'); 
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }

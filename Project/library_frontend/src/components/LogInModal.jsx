@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm} from 'react-hook-form';
-import { AuthContext } from '../auth/AuthContext'
 import axiosInstance from "../utils/axiosConfig";
 
+import { useDispatch, useSelector } from 'react-redux'
+import { loginAPI } from '../store/auth/auth-actions'
 // function parseJwt (token) {
 //   var base64Url = token.split('.')[1];
 //   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -15,8 +16,10 @@ import axiosInstance from "../utils/axiosConfig";
 // }
 
 function LogInModal() {
+  const dispatch = useDispatch();
+  const { status } = useSelector(state => state.auth);
+
   const navigate = useNavigate();
-  const { setAuthToken, setUser } = useContext(AuthContext);
   const {
     register,
     handleSubmit,
@@ -24,16 +27,13 @@ function LogInModal() {
     formState: { errors },
   } = useForm()
 
-  const onSubmit = async (data) => {
-    try {
-      const response = await axiosInstance.post('/login', data);
-      setAuthToken(response.data.token);
-      setUser(response.data.user);
-      navigate('/');
-    } catch (error) {
-      console.log(error);
-    }
+  const onSubmit = (data) => {
+    dispatch(loginAPI(data));
   };
+
+  useEffect(() => {
+    status === 'logged' && navigate('/');
+  }, [status]);
 
   return (
     <div className=" absolute inset-0 z-10 bg-black/50 grid place-items-center">

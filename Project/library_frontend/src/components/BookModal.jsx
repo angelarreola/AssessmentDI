@@ -1,19 +1,19 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axiosInstance from "../utils/axiosConfig";
 import { useLoaderData } from "react-router-dom";
-import { AuthContext } from "../auth/AuthContext";
+import { useSelector, useDispatch } from 'react-redux';
+import { registerBookAPI, updateBookAPI } from '../store/books/books-actions';
 
 function BookModal({ isEditing }) {
-  const { user } = useContext(AuthContext);
-  let book;
-
-  if (isEditing) {
-    const { request } = useParams();
-    book = useLoaderData(loader, request);
-  }
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector(state => state.auth);
+
+  const { request } = useParams();
+  const book = useLoaderData(loader, request); // It will be Undefined when whe are registering a new user.
+
   const {
     register,
     handleSubmit,
@@ -22,26 +22,15 @@ function BookModal({ isEditing }) {
     formState: { errors },
   } = useForm({ defaultValues: book });
 
-  const onSubmitRegister = async (data) => {
+  const onSubmitRegister = (data) => {
     const dataForm = {...data, userId: user.id, userName: user.name}
-    console.log(dataForm);
-    try {
-      const response = await axiosInstance.post("/books/register", dataForm);
-      console.log(response);
-      navigate("/books");
-    } catch (error) {
-      console.log(error);
-    }
+    dispatch(registerBookAPI(dataForm));
+    navigate('/books');
   };
 
-  const onSubmitEditing = async (data) => {
-    try {
-      const response = await axiosInstance.put(`books/update/${data.id}`, data);
-      console.log(response);
-      navigate("/books");
-    } catch (error) {
-      console.log(error);
-    }
+  const onSubmitEditing = (data) => {
+    dispatch(updateBookAPI(data.id, data));
+    navigate('/books');
   };
 
   return (

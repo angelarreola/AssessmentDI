@@ -1,15 +1,15 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Navigate } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
+import { useSelector } from 'react-redux'
 
 function ProtectedRoute({ children }) {
-  const { authToken } = useContext(AuthContext);
+  const { token, user, status } = useSelector(state => state.auth);
 
-  if (!authToken) {
-    return <Navigate to={"/login"} replace />
+  if (status === 'logged') {
+    return children;
   }
-
-  return children;
+  
+  return <Navigate to={"/login"} replace /> // Redirect
 }
 
 export default ProtectedRoute;
